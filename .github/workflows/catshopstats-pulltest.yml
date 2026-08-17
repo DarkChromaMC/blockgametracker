@@ -1,0 +1,41 @@
+name: CatShopStats URL Pull Test Artifact
+
+on:
+  push:
+    branches:
+      - test/catshopstats-url-pull
+    paths:
+      - .github/workflows/catshopstats-pulltest.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify parts and reconstruct exact JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "470dc3b2bbbdc00420a02d4c70fa8c0c9c53e31529db6698849f0a8500748c10  tmp/catshopstats.part00.b64" | sha256sum -c -
+          echo "1312d27f555fd602fe3e9f0ee0c3e1fd43ec987dad54067e67ae211715213dfb  tmp/catshopstats.part01.b64" | sha256sum -c -
+          echo "41f7bd75385bda26dcb6cd1f07aa69c077485bf11416a6157ce98b585da05490  tmp/catshopstats.part02.b64" | sha256sum -c -
+          echo "890cfd48926886274818e74a54f90e05eb20daa8b03cb73a7fe7704961fba943  tmp/catshopstats.part03.b64" | sha256sum -c -
+          echo "6925508db533c2ac2027705b6f7be2a039e733ec203f2269215fb6a5cb77770c  tmp/catshopstats.part04.b64" | sha256sum -c -
+          echo "4fadab0c0cd6e93e2a850c33857b2db658399516a671dd73df57cf01d7904a02  tmp/catshopstats.part05.b64" | sha256sum -c -
+          cat tmp/catshopstats.part*.b64 | base64 -d > CatShopStats-1.0.2-CatCraft.jar
+          test "$(stat -c%s CatShopStats-1.0.2-CatCraft.jar)" = "83627"
+          echo "ad323d29a033726d5dc418952b0d8471530ad04e5bfdfcedc86a45f20b6ee544  CatShopStats-1.0.2-CatCraft.jar" | sha256sum -c -
+
+      - name: Commit exact test artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CatShopStats-1.0.2-CatCraft.jar
+          git commit -m "Build CatShopStats URL pull test artifact"
+          git push
