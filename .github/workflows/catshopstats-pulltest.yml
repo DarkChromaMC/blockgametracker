@@ -39,3 +39,5 @@ jobs:
           git add CatShopStats-1.0.2-CatCraft.jar
           git commit -m "Build CatShopStats URL pull test artifact"
           git push
+
+# Touch to trigger after initial workflow creation.
